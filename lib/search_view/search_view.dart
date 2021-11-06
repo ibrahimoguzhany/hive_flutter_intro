@@ -33,7 +33,8 @@ class _SearchViewState extends State<SearchView> {
           findAndSet(val);
         },
       )),
-      body: Text(_items.map((e) => '${e.name} - ${e.company?.name}').join(',')),
+      body: Text(
+          _items.map((e) => '${e.name} - ${e.company?.name ?? ''}').join(',')),
     );
   }
 }

@@ -1,10 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:hive_intro/home/home_view_service.dart';
-import 'package:hive_intro/manager/user_cache_manager.dart';
-import 'package:hive_intro/search_view/search_view.dart';
-import 'package:kartal/kartal.dart';
+import 'home_view_service.dart';
+import '../manager/user_cache_manager.dart';
+import '../search_view/search_view.dart';
 
 import 'model/user_model.dart';
 
@@ -21,11 +19,12 @@ class _HomeViewState extends State<HomeView> {
   final String _baseUrl = "https://jsonplaceholder.typicode.com";
   List<UserModel>? _items;
   final _dummyPhoto = "https://picsum.photos/500/300";
+  final _cacheKey = "hive_intro";
   @override
   void initState() {
     super.initState();
     _homeService = HomeService(Dio(BaseOptions(baseUrl: _baseUrl)));
-    cacheManager = UserCacheManager("userCacheNew212312");
+    cacheManager = UserCacheManager(_cacheKey);
 
     fetchDatas();
   }
@@ -48,10 +47,19 @@ class _HomeViewState extends State<HomeView> {
         appBar: AppBar(
           actions: [
             IconButton(
-                onPressed: () {
-                  context.navigateToPage(SearchView(model: cacheManager));
+                onPressed: () async {
+                  await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SearchView(model: cacheManager)));
                 },
-                icon: const Icon(Icons.search_outlined))
+                icon: const Icon(Icons.search_outlined)),
+            IconButton(
+                onPressed: () async {
+                  await cacheManager.clearAll(_cacheKey);
+                },
+                icon: const Icon(Icons.delete_forever_outlined))
           ],
         ),
         floatingActionButton: FloatingActionButton(
